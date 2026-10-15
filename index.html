@@ -4,901 +4,213 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-</head>
-<body>
-<title>Data Engineering Study Hub</title>
+<meta name="theme-color" content="#f3f5f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10141c" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DE Study">
+<title>Data Engineering: Zero to Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a study notebook. Sticky tab bar, one column of content at ~70ch, schema-grid paper behind. */
+/* Layout: a study notebook on schema-grid paper. Sticky tab bar, one reading column (~72ch). */
 :root {
-  --paper: #f3f5f8;
-  --sheet: #ffffff;
-  --ink: #18202e;
-  --muted: #5a6577;
-  --rule: #d9dee7;
-  --accent: #2348c7;
-  --accent-soft: #e4eafb;
-  --mark: #f2b13a;
-  --mark-soft: #fdf1d8;
-  --good: #1d7a4c;
-  --good-soft: #def2e7;
-  --bad: #b3372c;
-  --bad-soft: #f8e1de;
-  --code-bg: #eef1f6;
+  --paper: #f3f5f8; --sheet: #ffffff; --ink: #18202e; --muted: #5a6577; --rule: #d9dee7;
+  --accent: #2348c7; --accent-ink: #ffffff; --accent-soft: #e4eafb;
+  --mark: #f2b13a; --mark-soft: #fdf1d8;
+  --good: #1d7a4c; --good-soft: #def2e7; --bad: #b3372c; --bad-soft: #f8e1de;
+  --code-bg: #eef1f6; --grid: #e3e7ee;
   --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #10141c; --sheet: #171c27; --ink: #e5e9f1; --muted: #98a2b5; --rule: #2a3242;
-    --accent: #8ea6ff; --accent-soft: #1f2a4d; --mark: #f2b13a; --mark-soft: #3a2e14;
-    --good: #5fd39a; --good-soft: #15352a; --bad: #ff8a7d; --bad-soft: #3d1d1a; --code-bg: #0e121a;
+    --accent: #8ea6ff; --accent-ink: #0d1424; --accent-soft: #1f2a4d; --mark: #f2b13a; --mark-soft: #3a2e14;
+    --good: #5fd39a; --good-soft: #15352a; --bad: #ff8a7d; --bad-soft: #3d1d1a; --code-bg: #0e121a; --grid: #1a2030;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #10141c; --sheet: #171c27; --ink: #e5e9f1; --muted: #98a2b5; --rule: #2a3242;
-  --accent: #8ea6ff; --accent-soft: #1f2a4d; --mark: #f2b13a; --mark-soft: #3a2e14;
-  --good: #5fd39a; --good-soft: #15352a; --bad: #ff8a7d; --bad-soft: #3d1d1a; --code-bg: #0e121a;
+  --accent: #8ea6ff; --accent-ink: #0d1424; --accent-soft: #1f2a4d; --mark: #f2b13a; --mark-soft: #3a2e14;
+  --good: #5fd39a; --good-soft: #15352a; --bad: #ff8a7d; --bad-soft: #3d1d1a; --code-bg: #0e121a; --grid: #1a2030;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 body {
-  background: var(--paper);
-  background-image: linear-gradient(var(--rule) 1px, transparent 1px), linear-gradient(90deg, var(--rule) 1px, transparent 1px);
-  background-size: 28px 28px;
-  background-attachment: fixed;
-  color: var(--ink);
-  font-family: var(--body);
-  font-size: 16px;
-  line-height: 1.55;
-  margin: 0;
+  margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6;
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px; background-attachment: fixed;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.wrap { max-width: 780px; margin: 0 auto; padding-inline: 16px; padding-block: 0 64px; }
-header.top { padding-block: 28px 12px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: end; justify-content: space-between; }
-h1 { font-family: var(--display); font-weight: 800; font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1.05; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
-h1 .q { color: var(--accent); font-family: var(--mono); font-weight: 500; font-size: 0.55em; display: block; letter-spacing: 0; margin-bottom: 6px; }
-.sync { font-family: var(--mono); font-size: 12px; color: var(--muted); }
-nav.tabs {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
-  background: var(--paper); border-bottom: 1px solid var(--rule);
-  display: flex; gap: 4px; overflow-x: auto; padding-block: 8px; scrollbar-width: none;
-}
-nav.tabs button {
-  font: 500 14px var(--body); color: var(--muted); background: transparent; border: 0;
-  padding: 8px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap;
-}
+[hidden] { display: none !important; }
+.wrap { max-width: 800px; margin: 0 auto; padding-inline: 16px; padding-block: 0 72px; }
+header.top { padding-block: 26px 10px; }
+.brand { font-family: var(--display); font-weight: 800; font-size: clamp(1.6rem, 5vw, 2.3rem); line-height: 1.05; margin: 0; letter-spacing: -0.01em; }
+.brand .q { display: block; color: var(--accent); font-family: var(--mono); font-weight: 500; font-size: 0.5em; letter-spacing: 0; margin-bottom: 6px; }
+nav.tabs { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); display: flex; gap: 2px; overflow-x: auto; padding-block: 8px; scrollbar-width: none; margin-inline: -16px; padding-inline: 12px; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { font: 500 14px var(--body); color: var(--muted); background: transparent; border: 0; padding: 8px 11px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
 nav.tabs button[aria-selected="true"] { color: var(--ink); background: var(--sheet); box-shadow: inset 0 -2px 0 var(--accent); }
-nav.tabs .count { font-family: var(--mono); font-size: 11px; background: var(--mark); color: #2a1d00; border-radius: 9px; padding: 1px 6px; margin-left: 4px; }
-main { display: grid; gap: 20px; padding-top: 20px; }
+.count { font-family: var(--mono); font-size: 11px; background: var(--mark); color: #2a1d00; border-radius: 9px; padding: 1px 6px; margin-left: 4px; }
+main { display: grid; gap: 18px; padding-top: 18px; }
 .sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; min-width: 0; }
-h2 { font-family: var(--display); font-weight: 600; font-size: 1.35rem; margin: 0 0 10px; text-wrap: balance; }
-h3 { font-size: 1rem; font-weight: 600; margin: 18px 0 6px; }
-.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+.hero { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 28px 24px; }
+h1, h2, h3, h4 { text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 600; font-size: 1.35rem; line-height: 1.2; margin: 0 0 10px; }
+h2.big { font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; }
+h4 { font-size: 1rem; margin: 20px 0 6px; }
+.ltitle { font-family: var(--display); font-weight: 800; font-size: clamp(1.6rem, 5vw, 2.2rem); line-height: 1.1; margin: 4px 0 6px; letter-spacing: -0.01em; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
 p { margin: 0 0 10px; }
+.lead { font-size: 1.06rem; font-weight: 500; }
 .muted { color: var(--muted); }
+.small { font-size: 14px; }
+.mono { font-family: var(--mono); font-size: 13px; }
+.goodtxt { color: var(--good); } .badtxt { color: var(--bad); }
 ul, ol { margin: 0 0 10px; padding-left: 22px; }
 li { margin-bottom: 4px; }
 a { color: var(--accent); text-underline-offset: 2px; }
-code, pre { font-family: var(--mono); font-size: 13.5px; }
-code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
-pre { background: var(--code-bg); padding: 12px 14px; border-radius: 8px; overflow-x: auto; margin: 8px 0 12px; line-height: 1.45; white-space: pre; }
-.btn {
-  font: 500 14px var(--body); border-radius: 7px; padding: 8px 14px; cursor: pointer;
-  border: 1px solid var(--rule); background: var(--sheet); color: var(--ink);
-}
-.btn:hover { border-color: var(--accent); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--sheet); }
+code, pre, textarea.code { font-family: var(--mono); font-size: 13.5px; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: var(--code-bg); padding: 12px 14px; border-radius: 8px; overflow-x: auto; margin: 8px 0 12px; line-height: 1.5; white-space: pre; }
+pre.flow { color: var(--accent); }
+table.mini { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 14px; display: block; overflow-x: auto; }
+table.mini th, table.mini td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.mini th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 500; }
+.analogy { background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; margin: 12px 0; }
+.callout { border-left: 3px solid var(--mark); background: var(--mark-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 10px 0; }
+.btn { font: 500 14px var(--body); border-radius: 7px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); min-height: 38px; }
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; }
 .btn.good { background: var(--good-soft); border-color: var(--good); color: var(--good); }
 .btn.bad { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+.btn.big { font-size: 16px; padding: 12px 20px; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn:focus-visible, nav.tabs button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-textarea, input[type="text"], input[type="date"], select {
-  width: 100%; font: 15px var(--body); color: var(--ink); background: var(--paper);
-  border: 1px solid var(--rule); border-radius: 7px; padding: 10px 12px;
-}
+.linkbtn { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.row.between { justify-content: space-between; }
+.grow { flex: 1; min-width: 180px; }
+textarea, input[type="text"], input[type="date"], select { width: 100%; font: 15px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 7px; padding: 10px 12px; }
 input[type="date"], select { width: auto; }
-textarea { min-height: 110px; resize: vertical; font-family: var(--mono); font-size: 14px; }
-.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
-.steps li { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--rule); margin: 0; }
-.steps li:last-child { border-bottom: 0; }
-.steps input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); }
-.steps .t { font-weight: 500; }
-.steps .d { color: var(--muted); font-size: 14px; }
-.steps .min { font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 3px; }
-.steps li.done .t { text-decoration: line-through; color: var(--muted); }
-.chip { display: inline-block; font-family: var(--mono); font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+input.grow { width: auto; }
+textarea { resize: vertical; display: block; margin-top: 8px; }
+textarea.code { line-height: 1.5; tab-size: 4; white-space: pre; overflow-x: auto; }
+textarea.prose { font-family: var(--body); font-size: 15px; white-space: pre-wrap; }
+.chip { display: inline-block; font-family: var(--mono); font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin: 0; }
 .chip.mark { background: var(--mark-soft); color: var(--ink); }
 .chip.good { background: var(--good-soft); color: var(--good); }
 .chip.bad { background: var(--bad-soft); color: var(--bad); }
-.callout { border-left: 3px solid var(--mark); background: var(--mark-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 10px 0; }
-.weeks { display: grid; gap: 10px; }
-details.week { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; }
-details.week > summary { list-style: none; cursor: pointer; padding: 14px 18px; display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; }
-details.week > summary::-webkit-details-marker { display: none; }
-details.week[open] > summary { border-bottom: 1px solid var(--rule); }
-.wk { font-family: var(--mono); font-size: 12px; color: var(--muted); }
-.wk b { display: block; font-family: var(--display); font-size: 1.5rem; color: var(--ink); line-height: 1; }
-.wtitle { font-weight: 600; }
-.wgoal { font-size: 14px; color: var(--muted); }
-.bar { width: 64px; height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; }
+.steps { list-style: none; padding: 0; margin: 0; }
+.steps li { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--rule); margin: 0; }
+.steps li:last-child { border-bottom: 0; }
+.steps input[type="checkbox"] { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--accent); }
+.steps .t { font-weight: 600; }
+.steps .d { color: var(--muted); font-size: 14px; }
+.steps li.done .t { text-decoration: line-through; color: var(--muted); }
+.phasegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.phase { text-align: left; display: grid; gap: 4px; border: 1px solid var(--rule); background: var(--paper); border-radius: 8px; padding: 12px; cursor: pointer; color: var(--ink); font: inherit; }
+.phase:hover { border-color: var(--accent); }
+.bar { display: block; width: 100%; height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; }
 .bar > i { display: block; height: 100%; background: var(--accent); }
-.week-body { padding: 4px 18px 18px; min-width: 0; }
-details.week.current { border-color: var(--accent); }
-.res { list-style: none; padding: 0; display: grid; gap: 6px; }
-.res li { margin: 0; }
-.res .why { color: var(--muted); font-size: 14px; }
-.card {
-  background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 22px;
-  display: grid; gap: 14px; min-height: 240px;
-}
+.phase-head { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+ol.lessons { list-style: none; padding: 0; margin: 4px 0 0; }
+ol.lessons li { margin: 0; border-top: 1px solid var(--rule); }
+ol.lessons button { width: 100%; display: grid; grid-template-columns: 26px 1fr; gap: 2px 10px; text-align: left; background: none; border: 0; padding: 11px 2px; cursor: pointer; color: var(--ink); font: inherit; }
+ol.lessons button .small { grid-column: 2; }
+ol.lessons .dot { grid-row: span 2; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--rule); display: grid; place-items: center; font-size: 12px; margin-top: 1px; }
+ol.lessons li.done .dot { background: var(--good); border-color: var(--good); color: var(--sheet); }
+ol.lessons li.next .dot { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+ol.lessons li.next .lt { font-weight: 600; }
+ol.lessons button:hover .lt { color: var(--accent); }
+.lesson { display: grid; gap: 18px; }
+.crumbs { color: var(--muted); }
+.step.body > p, .step.body > ul, .step.body > ol { max-width: 70ch; }
+.ex { border-top: 1px solid var(--rule); padding-top: 16px; margin-top: 16px; min-width: 0; }
+.ex:first-of-type { border-top: 0; padding-top: 0; margin-top: 8px; }
+.ex-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.ex-head .eyebrow { margin: 0; }
+.ex-q { font-weight: 500; margin-top: 6px; }
+.hint { background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; font-size: 14px; margin-top: 8px; }
+.verdict { border-radius: 8px; padding: 8px 12px; font-size: 14px; margin-top: 10px; font-weight: 500; }
+.verdict.ok { background: var(--good-soft); color: var(--good); }
+.verdict.no { background: var(--bad-soft); color: var(--bad); }
+.out { margin-top: 10px; min-width: 0; }
+.out pre { margin: 4px 0; }
+.err { background: var(--bad-soft); color: var(--bad); border-radius: 8px; padding: 8px 12px; font-size: 14px; }
+.err pre { background: transparent; padding: 0; margin: 4px 0 0; color: inherit; white-space: pre-wrap; }
+.answer { background: var(--good-soft); border-radius: 8px; padding: 10px 12px; margin-top: 10px; min-width: 0; }
+.answer pre { background: var(--sheet); white-space: pre-wrap; }
+.scroll { overflow-x: auto; }
+table.result { border-collapse: collapse; font-family: var(--mono); font-size: 13px; margin-top: 4px; }
+table.result th, table.result td { border: 1px solid var(--rule); padding: 4px 9px; text-align: left; white-space: nowrap; font-variant-numeric: tabular-nums; }
+table.result th { background: var(--code-bg); font-weight: 500; }
+.null { color: var(--muted); font-style: italic; }
+.loading::after { content: ""; display: inline-block; width: 1em; animation: dots 1.2s steps(4) infinite; overflow: hidden; vertical-align: bottom; }
+@keyframes dots { 0% { width: 0; } 100% { width: 1.2em; } }
+.quiz { border-top: 1px solid var(--rule); padding: 12px 0; display: grid; gap: 6px; }
+.quiz:first-of-type { border-top: 0; }
+.quiz .qf { font-weight: 500; }
+.quiz .row { margin-top: 0; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 22px; display: grid; gap: 12px; }
 .card .front { font-size: 1.15rem; font-weight: 500; }
 .card .back { border-top: 1px dashed var(--rule); padding-top: 12px; }
-.stats { display: flex; flex-wrap: wrap; gap: 8px 22px; font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 22px; font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; align-items: center; }
 .stats b { color: var(--ink); font-size: 1.1rem; }
-.boxes { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.boxes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .boxes div { text-align: center; padding: 8px 4px; border-radius: 8px; background: var(--paper); border: 1px solid var(--rule); font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .boxes div b { display: block; font-size: 1.1rem; color: var(--ink); }
-.prob { border-top: 1px solid var(--rule); padding-top: 16px; margin-top: 16px; display: grid; gap: 10px; min-width: 0; }
-.prob:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
-.hint { background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; font-size: 14px; }
-.answer { background: var(--good-soft); border-radius: 8px; padding: 10px 12px; min-width: 0; }
-.answer pre { background: var(--sheet); }
 .gap { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+.gap .row { margin-top: 0; }
 .gap.fixed .gt { text-decoration: line-through; color: var(--muted); }
 .gt { min-width: 0; overflow-wrap: anywhere; }
 .topicbars { display: grid; gap: 6px; margin: 8px 0 14px; }
-.topicbars div { display: grid; grid-template-columns: 110px 1fr 28px; gap: 10px; align-items: center; font-size: 14px; }
+.topicbars div { display: grid; grid-template-columns: 120px 1fr 28px; gap: 10px; align-items: center; font-size: 14px; }
 .topicbars span.b { height: 8px; background: var(--bad); border-radius: 4px; opacity: 0.75; }
 .topicbars em { font-style: normal; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; }
-.methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
-.methods div { border: 1px solid var(--rule); border-radius: 8px; padding: 12px; background: var(--paper); }
-.methods b { display: block; margin-bottom: 2px; }
-.methods span { font-size: 14px; color: var(--muted); }
 .skilltbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 .skilltbl th, .skilltbl td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .skilltbl th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
-.scroll { overflow-x: auto; }
-.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--sheet); padding: 9px 16px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 10; }
+.res { list-style: none; padding: 0; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--sheet); padding: 9px 16px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 10; max-width: calc(100% - 32px); text-align: center; }
 .toast.show { opacity: 1; }
-@media (max-width: 520px) {
-  .sheet { padding: 16px; }
-  details.week > summary { grid-template-columns: 42px 1fr; }
-  details.week > summary .bar { display: none; }
-  .boxes { grid-template-columns: repeat(3, 1fr); }
-  .topicbars div { grid-template-columns: 86px 1fr 24px; }
+@media (max-width: 560px) {
+  .sheet, .hero { padding: 16px; }
+  .gap { grid-template-columns: 1fr; }
+  .topicbars div { grid-template-columns: 90px 1fr 24px; }
+  .steps li { grid-template-columns: 26px 1fr; }
+  .steps li > div:last-child { grid-column: 2; }
+  .boxes div { padding: 6px 2px; }
 }
-@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } .loading::after { animation: none; width: 1.2em; } }
 </style>
-
+</head>
+<body>
 <div class="wrap">
   <header class="top">
-    <h1><span class="q">SELECT skill FROM resume WHERE can_defend = true;</span>Data Engineering Study Hub</h1>
-    <div class="sync" id="sync">Saved in this browser</div>
+    <h1 class="brand"><span class="q">SELECT you FROM learners WHERE level = 'zero';</span>Data Engineering: Zero to Pro</h1>
   </header>
-  <nav class="tabs" role="tablist" id="tabs">
-    <button role="tab" data-tab="today" aria-selected="true">Today</button>
-    <button role="tab" data-tab="plan" aria-selected="false">12-week plan</button>
-    <button role="tab" data-tab="practice" aria-selected="false">Practice</button>
-    <button role="tab" data-tab="cards" aria-selected="false">Flashcards<span class="count" id="dueCount" hidden>0</span></button>
-    <button role="tab" data-tab="gaps" aria-selected="false">Gaps<span class="count" id="gapCount" hidden>0</span></button>
-    <button role="tab" data-tab="skills" aria-selected="false">Resume check</button>
-    <button role="tab" data-tab="setup" aria-selected="false">Tools &amp; data</button>
+  <nav class="tabs" id="tabs" aria-label="Sections">
+    <button data-tab="today" aria-selected="true">Today</button>
+    <button data-tab="path" aria-selected="false">Course</button>
+    <button data-tab="review" aria-selected="false">Review<span class="count" id="dueCount" hidden>0</span></button>
+    <button data-tab="practice" aria-selected="false">Practice</button>
+    <button data-tab="gaps" aria-selected="false">Gaps<span class="count" id="gapCount" hidden>0</span></button>
+    <button data-tab="progress" aria-selected="false">Progress</button>
+    <button data-tab="play" aria-selected="false">Playground</button>
   </nav>
   <main id="view"></main>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script>
-/* ---------------- Content ---------------- */
-const TOPICS = ["SQL","Python","pandas","ETL","Modeling","Spark","Airflow","Docker","AWS","CI/CD","dbt/BI","Behavioral"];
-
-const WEEKS = [
- { n:1, title:"SQL foundations", goal:"Write joins and aggregates without looking anything up.",
-   ideas:["A query runs in this order: FROM / JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. That is why you can't use a SELECT alias in WHERE.",
-     "INNER JOIN keeps matching rows only. LEFT JOIN keeps every left row and fills NULLs when nothing matches.",
-     "WHERE filters rows before grouping; HAVING filters groups after grouping.",
-     "COUNT(*) counts rows; COUNT(col) skips NULLs; COUNT(DISTINCT col) counts unique values.",
-     "A join on a non-unique key multiplies rows. Always ask: what is one row of the result?"],
-   tasks:["SQLBolt lessons 1–12","Load the practice database into DB Fiddle (Tools & data tab)","Practice problems for week 1","LeetCode SQL 50: the Select and Basic Joins sections","Write a Feynman note: LEFT JOIN vs INNER JOIN"],
-   res:[["SQLBolt","https://sqlbolt.com/","Short interactive lessons in the browser"],["Mode SQL tutorial","https://mode.com/sql-tutorial/","Clear explanations of each clause"],["LeetCode SQL 50","https://leetcode.com/studyplan/top-sql-50/","The standard interview problem set"],["PostgreSQL Exercises","https://pgexercises.com/","Free graded exercises on one schema"]],
-   feynman:"Explain to a friend who doesn't code why a LEFT JOIN can return more rows than the left table has.",
-   resume:"Pick a resume bullet that involved data. Which two tables would you have joined, and on what key?" },
- { n:2, title:"SQL: subqueries, CTEs, CASE", goal:"Break a hard question into named steps with CTEs.",
-   ideas:["A CTE (WITH name AS (...)) is a named subquery. Use it to make each step readable.",
-     "Correlated subqueries run once per outer row; a JOIN or window function is often faster.",
-     "CASE WHEN turns conditions into values — useful for bucketing and conditional sums: SUM(CASE WHEN ... THEN amount ELSE 0 END).",
-     "NULL is not equal to anything, not even NULL. Use IS NULL and COALESCE(col, default).",
-     "IN / EXISTS for membership; NOT EXISTS is safer than NOT IN when NULLs are possible."],
-   tasks:["Mode SQL: Intermediate section","Practice problems for weeks 1–2 (mixed)","DataLemur: 5 Easy questions","Kaggle Learn: Python course, lessons 1–3","Feynman note: what a CTE is and when to use one"],
-   res:[["DataLemur SQL questions","https://datalemur.com/questions","Real interview questions by company"],["PostgreSQL tutorial: CTE","https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-cte/","Worked examples"],["Kaggle Learn: Python","https://www.kaggle.com/learn/python","Free, runs in the browser"]],
-   feynman:"Explain why NOT IN can return zero rows when the subquery contains a NULL.",
-   resume:"Think of a report you produced. Write it as a CTE pipeline: step 1, step 2, final SELECT." },
- { n:3, title:"Window functions + pandas start", goal:"Solve DataLemur Medium SQL; load and inspect data in pandas.",
-   ideas:["Window functions compute across related rows without collapsing them: func() OVER (PARTITION BY ... ORDER BY ...).",
-     "ROW_NUMBER gives 1,2,3; RANK gives 1,1,3; DENSE_RANK gives 1,1,2.",
-     "LAG/LEAD read the previous/next row — for day-over-day changes and gaps between events.",
-     "SUM(x) OVER (PARTITION BY k ORDER BY d) is a running total.",
-     "In pandas, a DataFrame is a table; df.info(), df.head(), df.describe() are your first three commands on any dataset."],
-   tasks:["PostgreSQL window-function tutorial page","Practice problems: window functions","DataLemur: 3 Medium questions","Kaggle Learn: Pandas, lessons 1–3","Feynman note: RANK vs DENSE_RANK vs ROW_NUMBER"],
-   res:[["PostgreSQL docs: window functions","https://www.postgresql.org/docs/current/tutorial-window.html","The official tutorial page, short"],["Kaggle Learn: Pandas","https://www.kaggle.com/learn/pandas","Hands-on, free"],["pandas: 10 minutes to pandas","https://pandas.pydata.org/docs/user_guide/10min.html","Official quick tour"],["Google Colab","https://colab.research.google.com/","Run Python with nothing installed"]],
-   feynman:"Explain the difference between GROUP BY and PARTITION BY without using either word.",
-   resume:"Where in your past work would 'top N per group' or 'change since last period' have come up?" },
- { n:4, title:"pandas cleaning + ETL concepts", goal:"Clean a messy dataset end to end and describe an ETL job.",
-   ideas:["Cleaning checklist: types (to_datetime, to_numeric), duplicates, missing values, inconsistent text (strip/lower), outliers.",
-     "merge() is a SQL join: how='left'/'inner', on=key. Check row counts before and after.",
-     "groupby().agg() is GROUP BY. Use named aggregations for readable output.",
-     "ETL = extract (pull from source) → transform (clean, join, aggregate) → load (write to target). ELT loads raw first and transforms inside the warehouse.",
-     "A good pipeline is idempotent: running it twice gives the same result, not double rows."],
-   tasks:["Kaggle Learn: Data Cleaning course","Clean the messy CSV (Tools & data tab) in Colab","Practice problems: pandas + ETL (mixed with SQL)","Watch Data Engineering Zoomcamp module 1 intro","Feynman note: what idempotent means and why pipelines need it"],
-   res:[["Kaggle Learn: Data Cleaning","https://www.kaggle.com/learn/data-cleaning","Missing values, parsing dates, encodings"],["pandas user guide: merge","https://pandas.pydata.org/docs/user_guide/merging.html","Official reference with diagrams"],["Data Engineering Zoomcamp","https://github.com/DataTalksClub/data-engineering-zoomcamp","Free full course: Docker, Postgres, orchestration, Spark, dbt"]],
-   feynman:"Explain ETL using a kitchen: what is extract, transform and load when cooking dinner?",
-   resume:"Describe one data flow from your resume as extract → transform → load. Where did it come from and where did it go?" },
- { n:5, title:"Mini pipeline into PostgreSQL", goal:"A working project on GitHub that you can explain line by line.",
-   ideas:["Pipeline shape: extract.py (download raw file) → transform.py (pandas clean) → load.py (write to Postgres).",
-     "Load with SQLAlchemy + df.to_sql, or psycopg COPY for speed.",
-     "Make loads idempotent: delete-then-insert for a date partition, or INSERT ... ON CONFLICT DO UPDATE (upsert).",
-     "Add data-quality checks: row counts, no NULL keys, values in range. Fail loudly when a check fails.",
-     "Keep config (paths, connection strings) out of code: environment variables or a .env file not committed to Git."],
-   tasks:["Pick the dataset: NYC taxi trips (one month)","Write extract, transform and load steps yourself","Add 3 data-quality checks","Push to GitHub with a README you wrote","Practice problems: mixed set"],
-   res:[["NYC TLC trip record data","https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page","The dataset for the project"],["Zoomcamp module 1: Docker + Postgres","https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/01-docker-terraform","Ingesting taxi data into Postgres step by step"],["PostgreSQL: INSERT ON CONFLICT","https://www.postgresql.org/docs/current/sql-insert.html","Upsert syntax"]],
-   feynman:"Explain what happens if your pipeline crashes halfway through the load, and how you made re-running safe.",
-   resume:"Your resume says you built or ran ETL. Compare that pipeline with this one: what was the same, what was bigger?" },
- { n:6, title:"Data modeling", goal:"Design and defend a star schema for your project.",
-   ideas:["Start every model by stating the grain: what is one row of the fact table? (e.g. one taxi trip).",
-     "Fact tables hold measures (amount, distance) and foreign keys. Dimension tables hold descriptions (date, zone, vendor).",
-     "Star schema = facts + denormalized dims; snowflake = dims normalized further. Star is simpler to query.",
-     "Normalization (3NF) removes duplication for OLTP writes; analytics denormalizes for fast reads.",
-     "Slowly changing dimensions: Type 1 overwrite, Type 2 add a new row with valid_from / valid_to / is_current."],
-   tasks:["Read Kimball dimensional-modeling techniques (first 6 topics)","Draw your star schema: fact_trips + 3–4 dims","Create the tables in Postgres and load them","Practice problems: modeling (mixed)","Feynman note: fact vs dimension"],
-   res:[["Kimball: dimensional modeling techniques","https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/","The source most interviewers learned from"],["dbt guide: building a Kimball model","https://docs.getdbt.com/blog/kimball-dimensional-model","Modern walk-through with SQL"],["dbdiagram.io","https://dbdiagram.io/","Draw your schema for free"]],
-   feynman:"Explain why an analytics warehouse repeats data that a normal app database would never repeat.",
-   resume:"Clayco-, CSUN- and EAB-style interviews ask about modeling. Sketch the model behind one report you made." },
- { n:7, title:"Apache Spark (PySpark)", goal:"Rebuild your pipeline's transform step in PySpark and explain why Spark exists.",
-   ideas:["Spark splits data into partitions and processes them in parallel across executors. pandas runs on one machine in memory.",
-     "Transformations (select, filter, groupBy) are lazy; nothing runs until an action (count, show, write).",
-     "Narrow transformations (filter, map) stay in a partition; wide ones (groupBy, join) shuffle data across the network — the slow part.",
-     "Broadcast a small table in a join to avoid a shuffle: F.broadcast(dim).",
-     "Write Parquet: columnar, compressed, keeps types. Partition output by a column you filter on (e.g. date)."],
-   tasks:["PySpark DataFrame quickstart","Zoomcamp module 5 (batch / Spark) videos","Rewrite transform.py as transform_spark.py","Practice problems: Spark (mixed)","Feynman note: lazy evaluation"],
-   res:[["PySpark quickstart: DataFrame","https://spark.apache.org/docs/latest/api/python/getting_started/quickstart_df.html","Official, runnable in Colab"],["Zoomcamp module 5: batch","https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/05-batch","Spark with the same taxi data"],["Spark SQL guide","https://spark.apache.org/docs/latest/sql-programming-guide.html","Reference"]],
-   feynman:"Explain a shuffle using a classroom: 30 students each hold cards and must group them by color.",
-   resume:"Your first ITOT bullet mentions Spark. What data size, what job, what did Spark do there that pandas couldn't?" },
- { n:8, title:"Airflow", goal:"Your pipeline runs daily as an Airflow DAG.",
-   ideas:["A DAG is a set of tasks with dependencies and no cycles: extract >> transform >> load.",
-     "The scheduler starts DAG runs on a schedule; each run has a logical date (the data interval it processes).",
-     "Tasks should be idempotent and use the logical date, so backfills and retries are safe.",
-     "Retries, retry_delay and alerting on failure are set per task or in default_args.",
-     "Airflow orchestrates; it should not do heavy processing itself. Push work to Spark, SQL or a container."],
-   tasks:["Airflow fundamentals tutorial","Astronomer Academy: Airflow 101 (free)","Write dags/taxi_pipeline.py","Run a backfill for 3 past days","Practice problems: Airflow (mixed)"],
-   res:[["Airflow tutorial: fundamentals","https://airflow.apache.org/docs/apache-airflow/stable/tutorial/fundamentals.html","Official first DAG"],["Astronomer Academy","https://academy.astronomer.io/","Free Airflow courses"],["Airflow: TaskFlow API","https://airflow.apache.org/docs/apache-airflow/stable/tutorial/taskflow.html","Modern way to write DAGs"]],
-   feynman:"Explain what a backfill is and why the logical date matters for it.",
-   resume:"Your resume lists Airflow. What did your DAGs do, how often did they run, and what happened when one failed?" },
- { n:9, title:"Docker", goal:"The whole pipeline runs with one docker compose up.",
-   ideas:["An image is a recipe (Dockerfile); a container is a running instance of it.",
-     "Each Dockerfile line is a cached layer. Copy requirements.txt and pip install before copying code, so rebuilds are fast.",
-     "docker compose runs several containers together (Postgres + pipeline + Airflow) on one network, by service name.",
-     "Volumes keep data when containers are removed (e.g. Postgres data).",
-     "Containers make it run the same on your laptop, CI and a server."],
-   tasks:["Docker get-started guide, parts 1–4","Write a Dockerfile for the pipeline","Write docker-compose.yml with Postgres","Practice problems: Docker (mixed)","Feynman note: image vs container"],
-   res:[["Docker: get started","https://docs.docker.com/get-started/","Official, beginner-friendly"],["Zoomcamp module 1: Docker","https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/01-docker-terraform","Postgres + pgAdmin in compose"]],
-   feynman:"Explain Docker to someone who has only ever installed apps on a phone.",
-   resume:"Where would containers have helped (or did help) in a project you list?" },
- { n:10, title:"AWS basics + CI/CD", goal:"Raw files land in S3; tests run on every push.",
-   ideas:["S3 stores objects in buckets; a common layout is raw/ → clean/ → curated/ by date.",
-     "EC2 is a virtual machine. IAM controls who can do what: give a role least privilege, never hard-code access keys.",
-     "boto3 is the Python SDK: s3.upload_file, s3.download_file.",
-     "CI runs tests and linting automatically on each push (GitHub Actions); CD deploys after tests pass.",
-     "Jenkins does the same job as GitHub Actions, self-hosted, with pipelines defined in a Jenkinsfile."],
-   tasks:["AWS Cloud Practitioner Essentials (Skill Builder, free) — S3, EC2, IAM modules","Create a free-tier S3 bucket; upload raw files with boto3","Write 3 pytest tests for transform","Add a GitHub Actions workflow that runs them","Practice problems: AWS + CI (mixed)"],
-   res:[["AWS Skill Builder","https://skillbuilder.aws/","Free Cloud Practitioner Essentials course"],["AWS free tier","https://aws.amazon.com/free/","Set a billing alarm first"],["GitHub Actions docs","https://docs.github.com/en/actions","Quickstart and Python examples"],["boto3 S3 guide","https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-examples.html","Upload/download examples"]],
-   feynman:"Explain why storing an AWS key in your code is dangerous even in a private repo.",
-   resume:"What did CI/CD look like on a team you were on? Who reviewed, what ran automatically?" },
- { n:11, title:"Job-posting gaps: T-SQL, dbt, Power BI", goal:"Talk about each at a basic, honest level.",
-   ideas:["T-SQL (SQL Server) differences: TOP instead of LIMIT, ISNULL, GETDATE(), temp tables #t, stored procedures.",
-     "dbt turns SELECT statements into tables/views; ref('model') builds the dependency graph; tests check unique / not_null.",
-     "Power BI: import data, build a model (relationships between facts and dims), DAX measures, report pages.",
-     "Lower priority, 1–2 h each: Kubernetes (runs containers at scale), MongoDB (document store), Jenkins.",
-     "It is fine to say 'I've used it at a basic level' — then show you understand what problem it solves."],
-   tasks:["dbt Fundamentals course (free)","Build 3 dbt models on your Postgres tables","Power BI: one Microsoft Learn module + a 1-page report","Read T-SQL differences; rewrite 3 of your queries in T-SQL","One 1-hour tutorial: Kubernetes basics"],
-   res:[["dbt Fundamentals","https://learn.getdbt.com/courses/dbt-fundamentals","Free official course"],["Microsoft Learn: Power BI","https://learn.microsoft.com/en-us/training/powerplatform/power-bi","Free modules"],["T-SQL reference","https://learn.microsoft.com/en-us/sql/t-sql/language-reference","Official"],["Kubernetes basics","https://kubernetes.io/docs/tutorials/kubernetes-basics/","Interactive tutorial"]],
-   feynman:"Explain what dbt adds on top of just writing SQL files.",
-   resume:"For each tool in the job posting you don't have, write one honest sentence you'd say in an interview." },
- { n:12, title:"Mock interviews", goal:"Pass two full timed mock interviews.",
-   ideas:["Technical round shape: 2 SQL problems (one with window functions), 1 Python/pandas, 1 design or modeling question.",
-     "Talk while you solve: restate the problem, state the grain, write a simple version, then improve.",
-     "Behavioral: STAR — Situation, Task, Action (your part, not the team's), Result (a number and how it was measured).",
-     "For every number on your resume (25%, 20%, 30%): what was the baseline, how was it measured, over what period?",
-     "End answers with what you learned or would do differently."],
-   tasks:["Write a STAR story for every resume bullet","Mock interview 1 (Practice tab, timed 45 min)","Review gaps and redo every missed problem","Mock interview 2","Update the Resume check tab honestly"],
-   res:[["DataLemur","https://datalemur.com/questions","Timed practice by company"],["LeetCode SQL 50","https://leetcode.com/studyplan/top-sql-50/","Redo the ones you missed"],["Zoomcamp project ideas","https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/projects","See how others present projects"]],
-   feynman:"Explain your portfolio project end to end in 2 minutes, out loud, with a timer.",
-   resume:"Read each resume line and ask: if they dig into this for 5 minutes, can I keep talking? Mark the ones where you can't." }
-];
-
-const METHODS = [
- ["Make it harder on purpose","Try before you look. Answers stay hidden until you've written an attempt or used all 3 hints."],
- ["Recall, don't re-read","Each session starts by writing what you remember on a blank page, then checking."],
- ["Space it out","Flashcards come back after 1, 3, 7, 14 and 30 days. A miss sends a card back to day 1."],
- ["Mix topics","Practice sets shuffle SQL, pandas, modeling and more, without labels."],
- ["Explain it simply","Write each concept for someone who doesn't code. Where you get stuck is the gap."],
- ["Track the gaps","Every miss goes to the Gaps list. Weakest topics come first next session."],
- ["Connect ideas","Tie each concept to something on your resume."]
-];
-
-const SESSION = [
- ["cards","Flashcards","Answer every due card. Type your answer before revealing.",10],
- ["recall","Blank-page recall","Write everything you remember from last session below, without looking. Then open last week's notes and check.",10],
- ["warm","Weakest-topic warm-up","One practice problem from your top gap topic.",10],
- ["learn","New material","This week's resources and tasks (12-week plan tab).",50],
- ["practice","Mixed practice","Practice tab: one mixed set.",20],
- ["feynman","Explain it simply","Write the week's Feynman prompt below in plain words.",10],
- ["resume","Connect to your resume","Answer the week's resume question below.",5]
-];
-
-/* Flashcards: [id, week, topic, front, back] */
-const CARDS = [
- ["c1",1,"SQL","In what order does SQL logically run the clauses of a SELECT?","FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT."],
- ["c2",1,"SQL","WHERE vs HAVING?","WHERE filters rows before grouping. HAVING filters groups after aggregation (can use SUM, COUNT…)."],
- ["c3",1,"SQL","What does a LEFT JOIN return?","Every row from the left table, plus matching right rows; NULLs on the right where nothing matches."],
- ["c4",1,"SQL","COUNT(*) vs COUNT(col) vs COUNT(DISTINCT col)?","All rows / non-NULL values of col / unique non-NULL values of col."],
- ["c5",1,"SQL","How do you find rows in A with no match in B?","LEFT JOIN B ... WHERE B.key IS NULL (or NOT EXISTS)."],
- ["c6",1,"SQL","Why can a join return more rows than either table?","If the join key isn't unique on one side, each match multiplies rows (fan-out)."],
- ["c7",2,"SQL","What is a CTE?","A named temporary result defined with WITH name AS (...), used like a table in the next query. Makes multi-step logic readable."],
- ["c8",2,"SQL","Why can NOT IN return no rows?","If the subquery contains a NULL, x NOT IN (...) is never TRUE. Use NOT EXISTS instead."],
- ["c9",2,"SQL","How do you replace NULL with a default value?","COALESCE(col, default) — returns the first non-NULL argument."],
- ["c10",2,"SQL","How do you do a conditional count or sum?","SUM(CASE WHEN condition THEN 1 ELSE 0 END), or COUNT(*) FILTER (WHERE condition) in Postgres."],
- ["c11",2,"SQL","Correlated subquery?","A subquery that references the outer row, so it runs once per outer row. Often replaceable with a join or window function."],
- ["c12",3,"SQL","ROW_NUMBER vs RANK vs DENSE_RANK on ties (100,100,90)?","ROW_NUMBER 1,2,3 · RANK 1,1,3 · DENSE_RANK 1,1,2."],
- ["c13",3,"SQL","What does PARTITION BY do in a window function?","Splits rows into groups; the function restarts in each group. Rows are NOT collapsed (unlike GROUP BY)."],
- ["c14",3,"SQL","What do LAG and LEAD do?","Read a value from the previous (LAG) or next (LEAD) row in the window's order."],
- ["c15",3,"SQL","How do you write a running total?","SUM(amount) OVER (PARTITION BY customer ORDER BY date)."],
- ["c16",3,"SQL","How do you get the top 3 per group?","ROW_NUMBER() OVER (PARTITION BY group ORDER BY value DESC) in a CTE, then WHERE rn <= 3."],
- ["c17",3,"pandas","First three things to run on a new DataFrame?","df.head(), df.info() (types, nulls), df.describe() (numeric ranges)."],
- ["c18",3,"pandas","How do you read a CSV and parse a date column?","pd.read_csv('f.csv', parse_dates=['col']) or pd.to_datetime(df['col'], errors='coerce')."],
- ["c19",4,"pandas","pandas equivalent of a SQL LEFT JOIN?","a.merge(b, on='key', how='left')."],
- ["c20",4,"pandas","pandas equivalent of GROUP BY with SUM and COUNT?","df.groupby('k').agg(total=('amount','sum'), n=('id','count'))."],
- ["c21",4,"pandas","How do you remove duplicate rows and handle missing values?","df.drop_duplicates(subset=[...]); df.dropna(subset=[...]) or df['c'].fillna(value)."],
- ["c22",4,"ETL","What is ETL vs ELT?","ETL transforms before loading into the target. ELT loads raw data first and transforms inside the warehouse (e.g. with dbt)."],
- ["c23",4,"ETL","What does idempotent mean for a pipeline?","Running it again with the same input gives the same result — no duplicates, no drift."],
- ["c24",5,"ETL","Two ways to make a load idempotent?","Delete-then-insert the partition you're loading, or upsert (INSERT ... ON CONFLICT DO UPDATE)."],
- ["c25",5,"ETL","Name three data-quality checks.","Row count above zero / matches source; key columns not NULL and unique; values within expected ranges."],
- ["c26",5,"ETL","Full load vs incremental load?","Full reloads everything each run. Incremental loads only new/changed rows since the last run (by date or watermark)."],
- ["c27",6,"Modeling","What is the grain of a fact table?","What one row represents (e.g. one taxi trip, one order line). Decide it first."],
- ["c28",6,"Modeling","Fact vs dimension table?","Facts hold measures + foreign keys (amount, qty). Dimensions hold descriptive attributes (date, customer, product)."],
- ["c29",6,"Modeling","Star vs snowflake schema?","Star: denormalized dimensions joined directly to the fact. Snowflake: dimensions normalized into more tables."],
- ["c30",6,"Modeling","SCD Type 1 vs Type 2?","Type 1 overwrites the old value. Type 2 adds a new row with valid_from, valid_to, is_current to keep history."],
- ["c31",6,"Modeling","Why denormalize for analytics?","Fewer joins → simpler, faster read queries. Writes are rare and batch, so duplication is acceptable."],
- ["c32",7,"Spark","How is Spark different from pandas?","Spark distributes data in partitions across many machines and evaluates lazily; pandas is in-memory on one machine and runs immediately."],
- ["c33",7,"Spark","Transformation vs action?","Transformations (filter, select, groupBy) build a plan lazily. Actions (count, show, write) run it."],
- ["c34",7,"Spark","What is a shuffle and why is it slow?","Moving rows between partitions/machines so equal keys meet (groupBy, join). It costs network and disk I/O."],
- ["c35",7,"Spark","How do you avoid a shuffle when joining a big table to a small one?","Broadcast the small table: big.join(F.broadcast(small), 'key')."],
- ["c36",7,"Spark","Why Parquet?","Columnar, compressed, keeps schema; queries read only needed columns."],
- ["c37",8,"Airflow","What is a DAG in Airflow?","A directed acyclic graph of tasks with dependencies, run on a schedule."],
- ["c38",8,"Airflow","What is a backfill?","Running a DAG for past dates (logical dates) it hasn't processed."],
- ["c39",8,"Airflow","Why should Airflow tasks be idempotent?","Retries and backfills re-run tasks; idempotent tasks don't duplicate or corrupt data."],
- ["c40",8,"Airflow","Should heavy processing run inside Airflow workers?","No. Airflow orchestrates; push heavy work to Spark, the warehouse, or containers."],
- ["c41",9,"Docker","Image vs container?","Image: a built, read-only template from a Dockerfile. Container: a running instance of an image."],
- ["c42",9,"Docker","Why copy requirements.txt before the code in a Dockerfile?","Layer caching: dependencies are reinstalled only when requirements change, not on every code edit."],
- ["c43",9,"Docker","What does docker compose do?","Defines and runs several containers together with shared networks and volumes from one YAML file."],
- ["c44",10,"AWS","What are S3, EC2 and IAM?","S3: object storage in buckets. EC2: virtual machines. IAM: users, roles and policies controlling access."],
- ["c45",10,"AWS","What is least privilege?","Give a user or role only the permissions it needs, on only the resources it needs."],
- ["c46",10,"CI/CD","CI vs CD?","CI: automatically build and test every change. CD: automatically deliver/deploy after tests pass."],
- ["c47",11,"dbt/BI","What does ref() do in dbt?","References another model; dbt builds the dependency graph and runs models in the right order."],
- ["c48",11,"dbt/BI","Two built-in dbt tests?","unique and not_null (also accepted_values, relationships)."],
- ["c49",11,"SQL","T-SQL equivalents of LIMIT 10 and COALESCE-like ISNULL?","SELECT TOP 10 ...; ISNULL(col, default). Current time: GETDATE()."],
- ["c50",12,"Behavioral","What does STAR stand for?","Situation, Task, Action (what YOU did), Result (a measured outcome)."],
- ["c51",12,"Behavioral","Three questions to prepare for every % on your resume?","What was the baseline? How was it measured? Over what period, and what was your part?"]
-];
-
-/* Practice problems */
-const PROBLEMS = [
- { id:"p1", week:1, topic:"SQL", q:"Using the practice database: total order amount per customer city, showing only cities with more than 500 in total, largest first.",
-   hints:["You need data from two tables. Which column links them?","JOIN orders to customers, GROUP BY city, and filter groups — not rows.","SELECT c.city, SUM(o.amount) ... GROUP BY c.city HAVING ..."],
-   a:"SELECT c.city, SUM(o.amount) AS total\nFROM orders o\nJOIN customers c ON c.id = o.customer_id\nGROUP BY c.city\nHAVING SUM(o.amount) > 500\nORDER BY total DESC;" },
- { id:"p2", week:1, topic:"SQL", q:"List customers who have never placed an order.",
-   hints:["Which join keeps rows that have no match?","LEFT JOIN customers to orders. What is in the orders columns when there's no match?","... WHERE o.id IS NULL"],
-   a:"SELECT c.name\nFROM customers c\nLEFT JOIN orders o ON o.customer_id = c.id\nWHERE o.id IS NULL;\n\n-- or: WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id)" },
- { id:"p3", week:1, topic:"SQL", q:"For each department name, show the number of employees and the average salary, rounded to 0 decimals. Include departments with zero employees.",
-   hints:["'Include departments with zero' tells you the join type and which table is on the left.","departments LEFT JOIN employees. COUNT(*) would count 1 for an empty department — what should you count instead?","COUNT(e.id), ROUND(AVG(e.salary))"],
-   a:"SELECT d.name, COUNT(e.id) AS headcount, ROUND(AVG(e.salary)) AS avg_salary\nFROM departments d\nLEFT JOIN employees e ON e.dept_id = d.id\nGROUP BY d.name;" },
- { id:"p4", week:2, topic:"SQL", q:"Find employees who earn more than the average salary of their own department.",
-   hints:["First compute each department's average. Then compare each employee to it.","Put the department averages in a CTE and join it back to employees on dept_id.","WITH dept_avg AS (SELECT dept_id, AVG(salary) AS avg_sal FROM employees GROUP BY dept_id) ..."],
-   a:"WITH dept_avg AS (\n  SELECT dept_id, AVG(salary) AS avg_sal\n  FROM employees\n  GROUP BY dept_id\n)\nSELECT e.name, e.salary, ROUND(d.avg_sal) AS dept_avg\nFROM employees e\nJOIN dept_avg d ON d.dept_id = e.dept_id\nWHERE e.salary > d.avg_sal;\n\n-- Window version: AVG(salary) OVER (PARTITION BY dept_id)" },
- { id:"p5", week:2, topic:"SQL", q:"Return the second-highest distinct salary in the company. Return NULL if there isn't one.",
-   hints:["Ties matter: 'distinct' salary.","One way: the max of all salaries that are below the max.","SELECT MAX(salary) FROM employees WHERE salary < (SELECT MAX(salary) ...)"],
-   a:"SELECT MAX(salary) AS second_highest\nFROM employees\nWHERE salary < (SELECT MAX(salary) FROM employees);\n\n-- Or: DENSE_RANK() OVER (ORDER BY salary DESC) and keep rank 2." },
- { id:"p6", week:2, topic:"SQL", q:"Label each order as 'small' (< 100), 'medium' (100–299) or 'large' (≥ 300) and count orders in each label.",
-   hints:["You need to turn a number into a label: which SQL expression does that?","CASE WHEN ... THEN ... END, then group by that expression.","Use a CTE with the label column, then GROUP BY label."],
-   a:"WITH labeled AS (\n  SELECT id,\n    CASE WHEN amount < 100 THEN 'small'\n         WHEN amount < 300 THEN 'medium'\n         ELSE 'large' END AS size\n  FROM orders\n)\nSELECT size, COUNT(*) FROM labeled GROUP BY size;" },
- { id:"p7", week:3, topic:"SQL", q:"Show the top 2 highest-paid employees in each department (ties may share a place).",
-   hints:["'Top N per group' is a window-function pattern.","Rank inside each department: PARTITION BY dept_id ORDER BY salary DESC. Which ranking function allows ties without skipping?","Compute DENSE_RANK in a CTE, filter rnk <= 2 outside (you can't filter a window function in WHERE directly)."],
-   a:"WITH ranked AS (\n  SELECT name, dept_id, salary,\n         DENSE_RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) AS rnk\n  FROM employees\n)\nSELECT * FROM ranked WHERE rnk <= 2;" },
- { id:"p8", week:3, topic:"SQL", q:"For each order, show the customer's running total of spend and the number of days since that customer's previous order.",
-   hints:["Two window functions over the same window: per customer, ordered by date.","Running total: SUM(...) OVER (...). Previous row's date: LAG(...).","order_date - LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date)"],
-   a:"SELECT customer_id, order_date, amount,\n  SUM(amount) OVER (PARTITION BY customer_id ORDER BY order_date) AS running_total,\n  order_date - LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date) AS days_since_prev\nFROM orders\nORDER BY customer_id, order_date;" },
- { id:"p9", week:3, topic:"pandas", q:"In Colab, load the messy CSV (Tools & data tab) and write the first commands you'd run to understand it. What problems do you expect to find?",
-   hints:["Three commands give shape, types, nulls and ranges.","df.head(), df.info(), df.describe(). Also df.duplicated().sum().","Look at: amount stored as text, mixed date formats, city spelled differently, a duplicate row, missing values."],
-   a:"import pandas as pd\nfrom io import StringIO\ndf = pd.read_csv(StringIO(raw))   # or pd.read_csv('orders_messy.csv')\ndf.head(); df.info(); df.describe(include='all')\ndf.duplicated().sum()\ndf['city'].value_counts()\n\n# Problems: duplicate order 1003, amount with '$' (text type),\n# mixed date formats, 'kinshasa ' vs 'Kinshasa', missing amount and city." },
- { id:"p10", week:4, topic:"pandas", q:"Clean the messy CSV: remove duplicates, make amount numeric, parse dates, standardize city, and drop rows with no amount. Then total amount per city.",
-   hints:["Do one problem per line: duplicates, then types, then text, then missing.","amount: remove '$' with .str.replace, then pd.to_numeric(errors='coerce'). city: .str.strip().str.title().","Finish with df.groupby('city', as_index=False)['amount'].sum()"],
-   a:"df = df.drop_duplicates()\ndf['amount'] = pd.to_numeric(df['amount'].astype(str).str.replace('$','', regex=False), errors='coerce')\ndf['order_date'] = pd.to_datetime(df['order_date'], errors='coerce', format='mixed')\ndf['city'] = df['city'].str.strip().str.title()\ndf = df.dropna(subset=['amount'])\nout = (df.groupby('city', as_index=False)['amount'].sum()\n         .sort_values('amount', ascending=False))\nprint(out)" },
- { id:"p11", week:4, topic:"ETL", q:"Your daily pipeline loads yesterday's trips. It crashed after loading half the rows, and you re-run it. How do you make sure there are no duplicates?",
-   hints:["The property you want has a name. What is it?","Either clear what this run owns before writing, or write in a way that merges on a key.","Delete-then-insert for that date in one transaction, or INSERT ... ON CONFLICT (trip_id) DO UPDATE."],
-   a:"Make the load idempotent:\n1) In one transaction: DELETE FROM trips WHERE trip_date = :run_date; then INSERT the day's rows. A crash rolls back the whole transaction.\n2) Or upsert on a unique key: INSERT ... ON CONFLICT (trip_id) DO UPDATE SET ...\nAlso: load to a staging table first, validate row counts, then swap/merge." },
- { id:"p12", week:5, topic:"ETL", q:"Name the three steps of your mini pipeline and one check you would run after each.",
-   hints:["Extract, transform, load — what can go wrong at each?","Extract: did a file arrive and is it non-empty? Transform: are keys valid? Load: do counts match?","Think: row counts, NULL keys, value ranges, schema."],
-   a:"Extract: file downloaded, size > 0, expected columns present.\nTransform: no NULL in key columns; values in range (fare >= 0, distance >= 0); rows dropped < X%.\nLoad: row count in target equals rows after transform; no duplicate keys." },
- { id:"p13", week:6, topic:"Modeling", q:"Design a star schema for NYC taxi trips. State the grain, the fact table's columns, and at least three dimensions.",
-   hints:["Start with the grain: what is one row?","Measures go in the fact (fare, distance, tip). Descriptions go in dims (when, where, who).","fact_trips(date_key, pickup_zone_key, dropoff_zone_key, vendor_key, payment_type_key, fare, tip, distance, duration)"],
-   a:"Grain: one row per completed trip.\nfact_trips: trip_id, pickup_date_key, pickup_zone_key, dropoff_zone_key, vendor_key, payment_type_key, passenger_count, trip_distance, fare_amount, tip_amount, total_amount, duration_min\ndim_date: date_key, date, day_of_week, month, is_weekend, holiday\ndim_zone: zone_key, zone_name, borough, service_zone\ndim_vendor: vendor_key, vendor_name\ndim_payment_type: payment_type_key, description" },
- { id:"p14", week:6, topic:"Modeling", q:"A customer moves from Kinshasa to Lubumbashi. Old sales should still count under Kinshasa. How do you model this?",
-   hints:["This is a slowly changing dimension. Which type keeps history?","Type 2: the customer gets a new row. What columns tell you which row was valid when?","valid_from, valid_to, is_current, and a surrogate key the fact table points to."],
-   a:"SCD Type 2 on dim_customer: close the old row (valid_to = move date, is_current = false) and insert a new row with a new surrogate key, city = Lubumbashi, valid_from = move date, is_current = true. Old facts keep pointing to the old surrogate key, so they stay under Kinshasa." },
- { id:"p15", week:7, topic:"Spark", q:"Write the PySpark version of 'total amount per city, largest first' and say which step causes a shuffle.",
-   hints:["Same idea as pandas groupby, different syntax. Import functions as F.","df.groupBy('city').agg(F.sum('amount').alias('total')).orderBy(...)","Both groupBy and orderBy are wide transformations."],
-   a:"from pyspark.sql import functions as F\nout = (df.groupBy('city')\n         .agg(F.sum('amount').alias('total'))\n         .orderBy(F.desc('total')))\nout.show()\n# groupBy shuffles rows so each city lands in one partition; orderBy shuffles again for a global sort.\n# Nothing runs until .show() (an action)." },
- { id:"p16", week:7, topic:"Spark", q:"Your Spark job joins a 500 GB trips table to a 2 MB zones table and is slow. What do you try first, and why?",
-   hints:["One side is tiny. Does it need to move across the network as a shuffle?","Send the small table to every executor instead.","F.broadcast(zones)"],
-   a:"Broadcast join: trips.join(F.broadcast(zones), 'zone_id'). The small table is copied to every executor, so the big table doesn't shuffle. Also check: filter and select columns before joining, and that the data is Parquet partitioned sensibly." },
- { id:"p17", week:8, topic:"Airflow", q:"Write an Airflow DAG skeleton that runs extract → transform → load every day at 06:00, with 2 retries 5 minutes apart.",
-   hints:["You need a DAG with a schedule and default_args for retries.","TaskFlow: @dag(schedule='0 6 * * *', ...) and @task functions.","Chain them: load(transform(extract()))"],
-   a:"from datetime import datetime, timedelta\nfrom airflow.decorators import dag, task\n\n@dag(schedule='0 6 * * *', start_date=datetime(2026, 1, 1), catchup=False,\n     default_args={'retries': 2, 'retry_delay': timedelta(minutes=5)})\ndef taxi_pipeline():\n    @task\n    def extract(ds=None): ...   # ds = logical date, use it to pick the file\n    @task\n    def transform(path): ...\n    @task\n    def load(path): ...\n    load(transform(extract()))\n\ntaxi_pipeline()" },
- { id:"p18", week:9, topic:"Docker", q:"Write a Dockerfile for a Python pipeline (requirements.txt + pipeline/ folder, entry point pipeline/main.py) that rebuilds fast when only code changes.",
-   hints:["Start from a slim Python base image.","Order lines so dependency install is cached: copy requirements first.","FROM, WORKDIR, COPY requirements.txt, RUN pip install, COPY code, CMD"],
-   a:"FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY pipeline/ pipeline/\nCMD [\"python\", \"pipeline/main.py\"]" },
- { id:"p19", week:10, topic:"AWS", q:"Your pipeline on EC2 needs to read and write one S3 bucket. How do you give it access safely?",
-   hints:["Where should credentials NOT be?","Attach permissions to the machine, not to the code.","An IAM role on the EC2 instance with a policy limited to that bucket."],
-   a:"Create an IAM role with a policy allowing only s3:GetObject, s3:PutObject (and s3:ListBucket) on arn:aws:s3:::my-bucket and arn:aws:s3:::my-bucket/*. Attach it to the EC2 instance profile. boto3 picks up the role's temporary credentials automatically — no keys in code or Git." },
- { id:"p20", week:10, topic:"CI/CD", q:"Write a GitHub Actions workflow that runs pytest on every push.",
-   hints:["Workflows live in .github/workflows/*.yml.","on: push; one job on ubuntu-latest; steps: checkout, setup-python, install, test.","actions/checkout and actions/setup-python"],
-   a:"name: tests\non: [push, pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with: { python-version: '3.12' }\n      - run: pip install -r requirements.txt pytest\n      - run: pytest" },
- { id:"p21", week:11, topic:"dbt/BI", q:"Write a dbt model that totals trips per day from a staging model stg_trips, and add tests so trip_date is unique and not null.",
-   hints:["A dbt model is a SELECT in models/*.sql. How do you reference another model?","{{ ref('stg_trips') }}. Tests go in a YAML file next to the model.","columns: - name: trip_date, tests: [unique, not_null]"],
-   a:"-- models/daily_trips.sql\nSELECT trip_date, COUNT(*) AS trips, SUM(total_amount) AS revenue\nFROM {{ ref('stg_trips') }}\nGROUP BY trip_date\n\n# models/schema.yml\nversion: 2\nmodels:\n  - name: daily_trips\n    columns:\n      - name: trip_date\n        tests: [unique, not_null]" },
- { id:"p22", week:12, topic:"Behavioral", q:"Interviewer: 'Your resume says you improved a process by 25%. Walk me through it.' Write your answer in STAR form.",
-   hints:["Four parts. Which one do people usually skip?","Result needs a baseline, how it was measured, and over what period.","Action must be what YOU did, with I, not we."],
-   a:"Template:\nSituation: team/project, what was slow or broken (1–2 sentences).\nTask: what you were responsible for.\nAction: 2–3 concrete steps YOU took (tools, decisions, trade-offs).\nResult: 'Runtime went from X to Y (25%) measured by Z over N weeks.' Then: what you learned or would do differently.\nIf you can't fill the baseline and measurement, rephrase the bullet until you can." }
-];
-
-const SKILLS = [
- ["SQL (joins, CTEs, windows)",3,"SQL"],["Python",4,"Python"],["pandas",4,"pandas"],["ETL pipelines",5,"ETL"],["PostgreSQL",5,"ETL"],
- ["Data modeling / star schema",6,"Modeling"],["Apache Spark / PySpark",7,"Spark"],["Airflow",8,"Airflow"],["Docker",9,"Docker"],
- ["AWS (S3, EC2, IAM)",10,"AWS"],["CI/CD (GitHub Actions, Jenkins)",10,"CI/CD"],["dbt",11,"dbt/BI"],["Power BI",11,"dbt/BI"],["T-SQL",11,"SQL"],
- ["Kubernetes",11,null],["MongoDB",11,null],["Behavioral stories (25%, 20%, 30%)",12,"Behavioral"]
-];
-
-const SETUP_SQL = `CREATE TABLE departments (id int PRIMARY KEY, name text);
-INSERT INTO departments VALUES (1,'Engineering'),(2,'Sales'),(3,'Finance'),(4,'Legal');
-
-CREATE TABLE employees (id int PRIMARY KEY, name text, dept_id int, salary int, hire_date date, manager_id int);
-INSERT INTO employees VALUES
- (1,'Amani',1,95000,'2019-03-01',NULL),(2,'Bea',1,88000,'2020-06-15',1),
- (3,'Chidi',1,88000,'2021-01-10',1),(4,'Dana',1,72000,'2023-02-20',1),
- (5,'Eli',2,65000,'2018-09-05',NULL),(6,'Fatou',2,71000,'2022-04-11',5),
- (7,'Gabe',2,58000,'2024-01-08',5),(8,'Hana',3,80000,'2017-11-30',NULL),
- (9,'Ibra',3,62000,'2023-07-19',8);
-
-CREATE TABLE customers (id int PRIMARY KEY, name text, city text);
-INSERT INTO customers VALUES
- (1,'Kasai Foods','Kinshasa'),(2,'Lualaba Mining','Kolwezi'),(3,'Bandal Print','Kinshasa'),
- (4,'Goma Coffee','Goma'),(5,'Matadi Port Co','Matadi');
-
-CREATE TABLE orders (id int PRIMARY KEY, customer_id int, order_date date, amount numeric);
-INSERT INTO orders VALUES
- (101,1,'2026-01-03',120),(102,1,'2026-01-10',80),(103,2,'2026-01-04',450),
- (104,2,'2026-02-01',300),(105,3,'2026-01-15',60),(106,1,'2026-02-02',210),
- (107,4,'2026-01-20',95),(108,3,'2026-02-11',330),(109,2,'2026-02-20',150),
- (110,4,'2026-03-01',40);`;
-
-const MESSY_CSV = `order_id,customer,city,order_date,amount
-1001,Kasai Foods,Kinshasa,2026-01-03,$120.00
-1002,Kasai Foods,kinshasa ,01/10/2026,80
-1003,Lualaba Mining,Kolwezi,2026-01-04,450
-1003,Lualaba Mining,Kolwezi,2026-01-04,450
-1004,Bandal Print,KINSHASA,2026-01-15,
-1005,Goma Coffee,Goma,Jan 20 2026,95.5
-1006,Matadi Port Co,,2026-02-01,$300
-1007,Goma Coffee, goma,2026-03-01,40`;
-
-/* ---------------- State ---------------- */
-const KEY = "de-study-hub-v1";
-const today = () => { const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
-const addDays = (s, n) => { const [y,m,d] = s.split("-").map(Number); const t = new Date(y, m-1, d+n); return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0"); };
-const daysBetween = (a, b) => { const p = s => { const [y,m,d] = s.split("-").map(Number); return Date.UTC(y,m-1,d); }; return Math.round((p(b)-p(a))/86400000); };
-const INTERVALS = [1,3,7,14,30];
-
-function blank() { return { v:1, start: today(), weekOverride: null, tasks:{}, steps:{}, cards:{}, gaps:[], notes:{}, prob:{}, skills:{}, newToday:{date:"",n:0}, updated:0 }; }
-let S = blank();
-try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch (e) {}
-
-let remoteRef = null, writing = Promise.resolve(), saveTimer = null;
-function save() {
-  S.updated = Date.now();
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
-  if (!remoteRef) return;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    const body = { state: JSON.stringify(S), updated: S.updated };
-    writing = writing.then(() => remoteRef.set(body)).then(() => setSync("Saved to your Claude account")).catch(() => setSync("Saved in this browser only"));
-  }, 900);
-}
-function setSync(t) { document.getElementById("sync").textContent = t; }
-
-(async () => {
-  try {
-    if (!window.claude || !window.claude.use) return;
-    const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
-    if (!db || !user) return;
-    const id = await user.id();
-    if (!id) return;
-    remoteRef = db.doc("data/users/" + id + "/state");
-    const snap = await remoteRef.get();
-    if (snap.exists) {
-      const d = snap.data();
-      if (d && typeof d.state === "string" && (d.updated || 0) > (S.updated || 0)) {
-        S = Object.assign(blank(), JSON.parse(d.state));
-        try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
-        render();
-      } else if ((S.updated || 0) > (d && d.updated || 0)) { save(); }
-    } else if (S.updated) { save(); }
-    setSync("Saved to your Claude account");
-  } catch (e) { setSync("Saved in this browser only"); }
-})();
-
-/* ---------------- Helpers ---------------- */
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const $ = s => document.querySelector(s);
-function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1800); }
-function currentWeek() {
-  if (S.weekOverride) return S.weekOverride;
-  return Math.max(1, Math.min(12, Math.floor(daysBetween(S.start, today()) / 7) + 1));
-}
-function unlockedCards() { const w = currentWeek(); return CARDS.filter(c => c[1] <= w); }
-function dueCards() {
-  const t = today(); const out = [];
-  let newBudget = S.newToday.date === t ? 15 - S.newToday.n : 15;
-  for (const c of unlockedCards()) {
-    const st = S.cards[c[0]];
-    if (st) { if (st.due <= t) out.push(c); }
-    else if (newBudget > 0) { out.push(c); newBudget--; }
-  }
-  return out;
-}
-function openGaps() { return S.gaps.filter(g => !g.fixed); }
-function gapTopics() {
-  const m = {}; for (const g of openGaps()) m[g.topic] = (m[g.topic] || 0) + 1;
-  return Object.entries(m).sort((a,b) => b[1]-a[1]);
-}
-function addGap(topic, text) { S.gaps.unshift({ id: "g" + Date.now() + Math.random().toString(36).slice(2,6), date: today(), topic, text, fixed: false }); }
-function copyText(txt, btn) {
-  const done = () => toast("Copied");
-  try { navigator.clipboard.writeText(txt).then(done).catch(() => fallback()); } catch (e) { fallback(); }
-  function fallback() { const pre = btn.closest(".copyable").querySelector("pre"); const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected — press Ctrl/Cmd+C"); }
-}
-function updateBadges() {
-  const d = dueCards().length, g = openGaps().length;
-  const dc = $("#dueCount"), gc = $("#gapCount");
-  dc.textContent = d; dc.hidden = d === 0; gc.textContent = g; gc.hidden = g === 0;
-}
-
-/* ---------------- Views ---------------- */
-let tab = "today";
-try { const h = location.hash.slice(1); if (["today","plan","practice","cards","gaps","skills","setup"].includes(h)) tab = h; } catch (e) {}
-
-function render() {
-  document.querySelectorAll("#tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab ? "true" : "false"));
-  const v = $("#view");
-  v.innerHTML = ({ today: viewToday, plan: viewPlan, practice: viewPractice, cards: viewCards, gaps: viewGaps, skills: viewSkills, setup: viewSetup })[tab]();
-  if (tab === "cards") bindCards();
-  if (tab === "practice") bindPractice();
-  updateBadges();
-}
-
-function viewToday() {
-  const w = currentWeek(), W = WEEKS[w-1], t = today();
-  const steps = S.steps[t] || {};
-  const n = S.notes[t] || {};
-  const doneCount = SESSION.filter(s => steps[s[0]]).length;
-  const top = gapTopics().slice(0,2);
-  const due = dueCards().length;
-  const weekday = new Date().getDay(); const weekend = weekday === 0 || weekday === 6;
-  return `
-  <section class="sheet">
-    <p class="eyebrow">Week ${w} of 12 · ${weekend ? "Weekend session, 4–5 h" : "Weekday session, about 2 h"}</p>
-    <h2>${esc(W.title)}</h2>
-    <p>${esc(W.goal)}</p>
-    <div class="row" style="margin-top:6px">
-      <span class="chip mark">${due} card${due===1?"":"s"} due</span>
-      ${top.length ? top.map(([k,c]) => `<span class="chip bad">Gap: ${esc(k)} (${c})</span>`).join("") : `<span class="chip good">No open gaps</span>`}
-      <span class="chip">${doneCount}/${SESSION.length} steps done</span>
-    </div>
-    ${weekend ? `<div class="callout">Weekend: after the steps below, spend 2 hours on the portfolio project tasks for this week.</div>` : ""}
-  </section>
-
-  <section class="sheet">
-    <h2>Today's session</h2>
-    <ol class="steps">
-      ${SESSION.map(([k,title,desc,min]) => `
-        <li class="${steps[k] ? "done" : ""}">
-          <input type="checkbox" id="step-${k}" data-step="${k}" ${steps[k] ? "checked" : ""} aria-label="${esc(title)} done">
-          <div><div class="t">${esc(title)}</div><div class="d">${esc(desc)}${k==="warm" && top.length ? ` Your top gap is <b>${esc(top[0][0])}</b>.` : ""}</div></div>
-          <span class="min">${min} min</span>
-        </li>`).join("")}
-    </ol>
-  </section>
-
-  <section class="sheet">
-    <h2>Blank-page recall</h2>
-    <p class="muted">No peeking. Write everything you remember from your last session: definitions, syntax, examples.</p>
-    <textarea id="note-recall" data-note="recall" placeholder="What I remember…">${esc(n.recall || "")}</textarea>
-    <div class="row" style="margin-top:8px"><span class="muted" style="font-size:14px">Missed something when you checked? Add it to Gaps:</span></div>
-    <div class="row" style="margin-top:6px">
-      <select id="quick-gap-topic" aria-label="Gap topic">${TOPICS.map(x => `<option>${esc(x)}</option>`).join("")}</select>
-      <input type="text" id="quick-gap-text" placeholder="What I forgot or got wrong" style="flex:1;min-width:180px">
-      <button class="btn" data-act="quick-gap">Add gap</button>
-    </div>
-  </section>
-
-  <section class="sheet">
-    <h2>Explain it simply</h2>
-    <p><b>Prompt:</b> ${esc(W.feynman)}</p>
-    <textarea id="note-feynman" data-note="feynman" placeholder="Plain words, short sentences, an example…">${esc(n.feynman || "")}</textarea>
-    <p class="muted" style="font-size:14px;margin-top:8px">Then ask yourself: why? what happens if…? Any part you can't explain goes to Gaps.</p>
-    <h3>Connect it to your resume</h3>
-    <p>${esc(W.resume)}</p>
-    <textarea id="note-resume" data-note="resume" placeholder="My answer…">${esc(n.resume || "")}</textarea>
-  </section>
-
-  <section class="sheet">
-    <h2>The method</h2>
-    <p class="muted">From "Psychology of Intelligence: Learn Anything So Fast It's Almost Unfair" (PsychToons).</p>
-    <div class="methods">${METHODS.map(m => `<div><b>${esc(m[0])}</b><span>${esc(m[1])}</span></div>`).join("")}</div>
-    <h3>Settings</h3>
-    <div class="row">
-      <label for="start-date">Start date</label>
-      <input type="date" id="start-date" value="${esc(S.start)}">
-      <label for="week-ov">Week</label>
-      <select id="week-ov"><option value="">Auto (from start date)</option>${WEEKS.map(x => `<option value="${x.n}" ${S.weekOverride===x.n?"selected":""}>Week ${x.n}</option>`).join("")}</select>
-    </div>
-  </section>`;
-}
-
-function viewPlan() {
-  const cw = currentWeek();
-  return `<section class="sheet">
-    <h2>12-week plan</h2>
-    <p>Ordered by what interviewers test most. About 15 hours a week. Expect to be solid on the core in 6–8 weeks.</p>
-    <p class="muted" style="font-size:14px">Portfolio project: NYC taxi data → pandas → PySpark → PostgreSQL star schema → Airflow → Docker → S3 → GitHub Actions → SQL on top. You build it piece by piece in weeks 5–11.</p>
-  </section>
-  <div class="weeks">${WEEKS.map(W => {
-    const done = W.tasks.filter((_,i) => S.tasks[W.n+"-"+i]).length;
-    const pct = Math.round(done / W.tasks.length * 100);
-    return `<details class="week ${W.n===cw?"current":""}" ${W.n===cw?"open":""}>
-      <summary><span class="wk">WEEK<b>${W.n}</b></span><span><span class="wtitle">${esc(W.title)}</span>${W.n===cw?` <span class="chip">this week</span>`:""}<br><span class="wgoal">${esc(W.goal)}</span></span><span class="bar" title="${done}/${W.tasks.length} tasks"><i style="width:${pct}%"></i></span></summary>
-      <div class="week-body">
-        <h3>Core ideas</h3><ul>${W.ideas.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-        <h3>Tasks</h3>
-        <ol class="steps">${W.tasks.map((x,i) => { const k = W.n+"-"+i; return `<li class="${S.tasks[k]?"done":""}"><input type="checkbox" id="task-${k}" data-task="${k}" ${S.tasks[k]?"checked":""} aria-label="Done: ${esc(x)}"><div class="t">${esc(x)}</div><span></span></li>`; }).join("")}</ol>
-        <h3>Free resources</h3>
-        <ul class="res">${W.res.map(r => `<li><a href="${esc(r[1])}" target="_blank" rel="noopener">${esc(r[0])}</a> <span class="why">— ${esc(r[2])}</span></li>`).join("")}</ul>
-        <h3>Explain it simply</h3><p>${esc(W.feynman)}</p>
-        <h3>Resume link</h3><p>${esc(W.resume)}</p>
-      </div></details>`; }).join("")}
-  </div>
-  <section class="sheet"><h2>Lower priority</h2><p>Reach "I've used it" level with one 1–2 hour tutorial each: Kubernetes, Jenkins, MongoDB, Java, C++, React/Node. Fit them into light days in weeks 10–11.</p></section>`;
-}
-
-/* Practice: mixed set */
-let practiceSet = null;
-function buildSet() {
-  const w = currentWeek();
-  const pool = PROBLEMS.filter(p => p.week <= w);
-  const weak = new Set(gapTopics().map(x => x[0]));
-  const scored = pool.map(p => ({ p, s: Math.random() + (weak.has(p.topic) ? 0.6 : 0) + (S.prob[p.id] && S.prob[p.id].result === "miss" ? 0.5 : 0) + (S.prob[p.id] && S.prob[p.id].result === "got" ? -0.4 : 0) }));
-  scored.sort((a,b) => b.s - a.s);
-  const picked = []; const topicCount = {};
-  for (const {p} of scored) { if (picked.length >= 5) break; if ((topicCount[p.topic]||0) >= 2) continue; picked.push(p); topicCount[p.topic] = (topicCount[p.topic]||0)+1; }
-  for (let i = picked.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [picked[i],picked[j]] = [picked[j],picked[i]]; }
-  practiceSet = picked.map(p => ({ id: p.id, hints: 0, shown: false }));
-}
-function viewPractice() {
-  if (!practiceSet) buildSet();
-  const done = Object.values(S.prob).filter(x => x.result).length;
-  return `<section class="sheet">
-    <h2>Mixed practice</h2>
-    <p>Five problems from everything you've covered so far, shuffled, topics hidden. Weak topics and missed problems come up more often.</p>
-    <div class="callout">Write your attempt first. The answer unlocks after a real attempt or all three hints. SQL runs in <a href="https://www.db-fiddle.com/" target="_blank" rel="noopener">DB Fiddle</a> with the practice database (Tools &amp; data tab); Python runs in <a href="https://colab.research.google.com/" target="_blank" rel="noopener">Colab</a>.</div>
-    <div class="row"><button class="btn" data-act="newset">New mixed set</button><span class="muted" style="font-size:14px">${done} of ${PROBLEMS.length} problems attempted overall</span></div>
-  </section>
-  <section class="sheet">${practiceSet.map((ps, i) => {
-    const p = PROBLEMS.find(x => x.id === ps.id); const rec = S.prob[p.id] || {};
-    const attempt = rec.attempt || "";
-    const canShow = ps.hints >= 3 || attempt.trim().length >= 20;
-    return `<div class="prob" data-pid="${p.id}" data-idx="${i}">
-      <p class="eyebrow">Problem ${i+1} of ${practiceSet.length}${ps.shown ? " · " + esc(p.topic) : ""}${rec.result ? ` · last time: ${rec.result === "got" ? "got it" : "missed"}` : ""}</p>
-      <div style="font-weight:500">${esc(p.q)}</div>
-      <textarea id="att-${p.id}" data-attempt="${p.id}" placeholder="Your attempt…">${esc(attempt)}</textarea>
-      ${p.hints.slice(0, ps.hints).map((h,k) => `<div class="hint"><b>Hint ${k+1}:</b> ${esc(h)}</div>`).join("")}
-      <div class="row">
-        <button class="btn" data-act="hint" ${ps.hints >= 3 || ps.shown ? "disabled" : ""}>Hint ${Math.min(ps.hints+1,3)} of 3</button>
-        <button class="btn primary" data-act="show" ${canShow && !ps.shown ? "" : "disabled"}>Show answer</button>
-        ${!canShow && !ps.shown ? `<span class="muted" style="font-size:13px">Write an attempt or use all hints to unlock</span>` : ""}
-      </div>
-      ${ps.shown ? `<div class="answer"><b>Answer</b><pre>${esc(p.a)}</pre>
-        <div class="row"><button class="btn good" data-act="got">I got it</button><button class="btn bad" data-act="miss">I missed it — add to gaps</button></div></div>` : ""}
-    </div>`; }).join("")}
-  </section>
-  <section class="sheet"><h2>Mock interview (week 12)</h2><p>Set a 45-minute timer. Do a new mixed set without hints, then answer three behavioral questions out loud: your proudest project, a pipeline that failed, and one resume number (how it was measured). Write a debrief in Gaps.</p></section>`;
-}
-function bindPractice() {
-  $("#view").querySelectorAll("textarea[data-attempt]").forEach(ta => ta.addEventListener("input", () => {
-    const id = ta.dataset.attempt; S.prob[id] = Object.assign({}, S.prob[id], { attempt: ta.value }); save();
-    const box = ta.closest(".prob"), idx = +box.dataset.idx, ps = practiceSet[idx];
-    const btn = box.querySelector('[data-act="show"]'); const can = ps.hints >= 3 || ta.value.trim().length >= 20;
-    if (btn && !ps.shown) { btn.disabled = !can; const note = box.querySelector(".row .muted"); if (note) note.hidden = can; }
-  }));
-}
-
-/* Flashcards */
-let cardQueue = null, cardIdx = 0, cardRevealed = false, cardSession = { got:0, miss:0 };
-function viewCards() {
-  if (!cardQueue) { cardQueue = dueCards().map(c => c[0]); cardIdx = 0; cardRevealed = false; cardSession = { got:0, miss:0 }; }
-  const boxes = [0,0,0,0,0,0];
-  for (const c of unlockedCards()) { const st = S.cards[c[0]]; boxes[st ? st.box + 1 : 0]++; }
-  const head = `<section class="sheet">
-    <h2>Flashcards</h2>
-    <p>Cards for weeks 1–${currentWeek()} come back after 1, 3, 7, 14 and 30 days. Up to 15 new cards a day.</p>
-    <div class="boxes"><div><b>${boxes[0]}</b>new</div>${INTERVALS.map((d,i) => `<div><b>${boxes[i+1]}</b>${d}-day</div>`).join("")}</div>
-  </section>`;
-  if (cardIdx >= cardQueue.length) {
-    return head + `<section class="card"><div class="front">${cardQueue.length ? "Done for today." : "Nothing due today."}</div>
-      <div class="stats"><span><b>${cardSession.got}</b> got it</span><span><b>${cardSession.miss}</b> missed → Gaps</span></div>
-      <p class="muted">Come back tomorrow. Missed cards return in 1 day.</p></section>`;
-  }
-  const c = CARDS.find(x => x[0] === cardQueue[cardIdx]);
-  return head + `<section class="card" id="card">
-    <div class="stats"><span>Card <b>${cardIdx+1}</b> / ${cardQueue.length}</span><span class="chip">${esc(c[2])}</span></div>
-    <div class="front">${esc(c[3])}</div>
-    <textarea id="card-attempt" placeholder="Type your answer from memory first…"></textarea>
-    ${cardRevealed ? `<div class="back"><p class="eyebrow">Answer</p><p>${esc(c[4])}</p>
-      <div class="row"><button class="btn good" data-act="card-got">I got it</button><button class="btn bad" data-act="card-miss">I missed it</button></div></div>`
-      : `<div class="row"><button class="btn primary" data-act="card-show" id="card-show" disabled>Show answer</button><span class="muted" style="font-size:13px">Type something first — guessing counts.</span></div>`}
-  </section>`;
-}
-function bindCards() {
-  const ta = $("#card-attempt"), btn = $("#card-show");
-  if (ta) { if (bindCards.lastAttempt) ta.value = bindCards.lastAttempt; ta.addEventListener("input", () => { bindCards.lastAttempt = ta.value; if (btn) btn.disabled = ta.value.trim().length < 2; }); if (btn) btn.disabled = ta.value.trim().length < 2; if (!cardRevealed) ta.focus({ preventScroll: true }); }
-}
-function gradeCard(ok) {
-  const c = CARDS.find(x => x[0] === cardQueue[cardIdx]); const t = today();
-  const st = S.cards[c[0]];
-  if (!st) { if (S.newToday.date !== t) S.newToday = { date: t, n: 0 }; S.newToday.n++; }
-  let box = st ? st.box : -1;
-  if (ok) { box = Math.min(box + 1, 4); cardSession.got++; }
-  else { box = 0; cardSession.miss++; addGap(c[2], "Flashcard: " + c[3]); }
-  S.cards[c[0]] = { box, due: addDays(t, INTERVALS[box]), last: ok ? "got" : "miss" };
-  cardIdx++; cardRevealed = false; bindCards.lastAttempt = "";
-  save(); render();
-}
-
-function viewGaps() {
-  const tops = gapTopics(); const max = tops.length ? tops[0][1] : 1;
-  const open = openGaps(), fixed = S.gaps.filter(g => g.fixed);
-  return `<section class="sheet">
-    <h2>Gaps</h2>
-    <p>Every miss lands here. Weakest topics come first in practice sets and today's warm-up. Mark a gap fixed once you can answer it from memory on a later day.</p>
-    ${tops.length ? `<div class="topicbars">${tops.map(([k,c]) => `<div><span>${esc(k)}</span><span class="b" style="width:${Math.max(6, c/max*100)}%"></span><em>${c}</em></div>`).join("")}</div>` : ""}
-    <div class="row">
-      <select id="gap-topic" aria-label="Gap topic">${TOPICS.map(x => `<option>${esc(x)}</option>`).join("")}</select>
-      <input type="text" id="gap-text" placeholder="What I got wrong or couldn't explain" style="flex:1;min-width:180px">
-      <button class="btn primary" data-act="add-gap">Add</button>
-    </div>
-  </section>
-  <section class="sheet">
-    <h2>Open (${open.length})</h2>
-    ${open.length ? open.map(g => gapRow(g)).join("") : `<p class="muted">No open gaps. Misses from flashcards and practice will show up here.</p>`}
-    ${fixed.length ? `<h3>Fixed (${fixed.length})</h3>${fixed.slice(0,30).map(g => gapRow(g)).join("")}` : ""}
-  </section>`;
-}
-function gapRow(g) {
-  return `<div class="gap ${g.fixed?"fixed":""}"><div class="gt"><span class="chip ${g.fixed?"good":"bad"}">${esc(g.topic)}</span> <span class="muted" style="font-family:var(--mono);font-size:12px">${esc(g.date)}</span><br>${esc(g.text)}</div>
-    <div class="row"><button class="btn" data-act="toggle-gap" data-gid="${esc(g.id)}">${g.fixed?"Reopen":"Fixed"}</button><button class="btn" data-act="del-gap" data-gid="${esc(g.id)}" aria-label="Remove gap">Remove</button></div></div>`;
-}
-
-const LEVELS = ["Not started","Learning","Can explain","Interview-ready"];
-function viewSkills() {
-  const w = currentWeek();
-  return `<section class="sheet">
-    <h2>Resume check</h2>
-    <p>Set your honest level for each skill. Only claim a skill in interviews once it's at <b>Can explain</b> or higher.</p>
-    <div class="scroll"><table class="skilltbl"><thead><tr><th>Skill</th><th>Planned</th><th>Your level</th><th>Safe to claim?</th></tr></thead><tbody>
-    ${SKILLS.map(([name, wk, topic], i) => { const lvl = S.skills[i] || 0; const gaps = topic ? openGaps().filter(g => g.topic === topic).length : 0; const safe = lvl >= 2;
-      return `<tr><td>${esc(name)}${gaps ? `<br><span class="chip bad">${gaps} open gap${gaps>1?"s":""}</span>` : ""}</td><td style="font-family:var(--mono);font-size:13px">wk ${wk}${wk<=w?"":" (later)"}</td>
-      <td><select id="skill-${i}" data-skill="${i}" aria-label="Level for ${esc(name)}">${LEVELS.map((l,k) => `<option value="${k}" ${k===lvl?"selected":""}>${l}</option>`).join("")}</select></td>
-      <td>${safe ? `<span class="chip good">Yes</span>` : `<span class="chip bad">Not yet</span>`}</td></tr>`; }).join("")}
-    </tbody></table></div>
-  </section>`;
-}
-
-function viewSetup() {
-  return `<section class="sheet">
-    <h2>Nothing to install to start</h2>
-    <ul>
-      <li><b>SQL:</b> open <a href="https://www.db-fiddle.com/" target="_blank" rel="noopener">DB Fiddle</a>, pick PostgreSQL, paste the practice database below into the left panel, write queries on the right.</li>
-      <li><b>Python / pandas / PySpark:</b> <a href="https://colab.research.google.com/" target="_blank" rel="noopener">Google Colab</a> — free notebooks in the browser. <code>!pip install pyspark</code> works there.</li>
-      <li><b>Courses:</b> <a href="https://www.kaggle.com/learn" target="_blank" rel="noopener">Kaggle Learn</a> (Python, Pandas, Data Cleaning) and the <a href="https://github.com/DataTalksClub/data-engineering-zoomcamp" target="_blank" rel="noopener">Data Engineering Zoomcamp</a> are free.</li>
-      <li><b>From week 5:</b> install PostgreSQL, Docker Desktop and Git on your computer, and make a GitHub account.</li>
-    </ul>
-  </section>
-  <section class="sheet copyable">
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Practice database (PostgreSQL)</h2><button class="btn" data-act="copy" data-src="sql">Copy</button></div>
-    <p class="muted" style="margin-top:6px">Tables: departments, employees, customers, orders. Used by the SQL practice problems.</p>
-    <pre>${esc(SETUP_SQL)}</pre>
-  </section>
-  <section class="sheet copyable">
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Messy CSV for pandas</h2><button class="btn" data-act="copy" data-src="csv">Copy</button></div>
-    <p class="muted" style="margin-top:6px">In Colab: <code>raw = """</code>paste<code>"""</code>, then <code>pd.read_csv(StringIO(raw))</code>. It has duplicates, mixed dates, text amounts and messy city names on purpose.</p>
-    <pre>${esc(MESSY_CSV)}</pre>
-  </section>
-  <section class="sheet">
-    <h2>Using this with Claude Code</h2>
-    <p>The <code>CLAUDE.md</code> in <code>~/Projects/data-eng-study</code> tells Claude Code to coach you the same way. Use this page for the daily routine; use Claude Code when you want it to review your code, quiz you, or play interviewer.</p>
-  </section>`;
-}
-
-/* ---------------- Events ---------------- */
-document.getElementById("tabs").addEventListener("click", e => {
-  const b = e.target.closest("button[data-tab]"); if (!b) return;
-  tab = b.dataset.tab; render(); window.scrollTo({ top: 0 });
-});
-document.addEventListener("change", e => {
-  const el = e.target;
-  if (el.dataset.step) { const t = today(); S.steps[t] = Object.assign({}, S.steps[t], { [el.dataset.step]: el.checked }); save(); render(); }
-  else if (el.dataset.task) { S.tasks[el.dataset.task] = el.checked; save(); render(); }
-  else if (el.dataset.skill) { S.skills[el.dataset.skill] = +el.value; save(); render(); }
-  else if (el.id === "start-date" && el.value) { S.start = el.value; save(); render(); }
-  else if (el.id === "week-ov") { S.weekOverride = el.value ? +el.value : null; practiceSet = null; cardQueue = null; save(); render(); }
-});
-document.addEventListener("input", e => {
-  const el = e.target;
-  if (el.dataset.note) { const t = today(); S.notes[t] = Object.assign({}, S.notes[t], { [el.dataset.note]: el.value }); save(); }
-});
-document.addEventListener("click", e => {
-  const b = e.target.closest("[data-act]"); if (!b) return;
-  const act = b.dataset.act;
-  if (act === "hint" || act === "show" || act === "got" || act === "miss") {
-    const box = b.closest(".prob"), ps = practiceSet[+box.dataset.idx], p = PROBLEMS.find(x => x.id === ps.id);
-    if (act === "hint") ps.hints = Math.min(3, ps.hints + 1);
-    if (act === "show") ps.shown = true;
-    if (act === "got" || act === "miss") {
-      S.prob[p.id] = Object.assign({}, S.prob[p.id], { result: act, date: today() });
-      if (act === "miss") { addGap(p.topic, "Practice: " + p.q.slice(0, 140)); toast("Added to Gaps"); } else toast("Logged");
-      save();
-    }
-    render(); const again = document.querySelector(`.prob[data-pid="${p.id}"]`); if (again && act !== "got" && act !== "miss") again.scrollIntoView({ block: "nearest" });
-  }
-  else if (act === "newset") { buildSet(); render(); }
-  else if (act === "card-show") { cardRevealed = true; render(); }
-  else if (act === "card-got") gradeCard(true);
-  else if (act === "card-miss") gradeCard(false);
-  else if (act === "add-gap" || act === "quick-gap") {
-    const pre = act === "add-gap" ? "gap" : "quick-gap";
-    const txt = $("#" + pre + "-text").value.trim(); if (!txt) { toast("Write what you missed first"); return; }
-    addGap($("#" + pre + "-topic").value, txt); save(); toast("Added to Gaps");
-    if (act === "add-gap") render(); else { $("#quick-gap-text").value = ""; updateBadges(); }
-  }
-  else if (act === "toggle-gap") { const g = S.gaps.find(x => x.id === b.dataset.gid); if (g) { g.fixed = !g.fixed; save(); render(); } }
-  else if (act === "del-gap") { S.gaps = S.gaps.filter(x => x.id !== b.dataset.gid); save(); render(); }
-  else if (act === "copy") copyText(b.dataset.src === "sql" ? SETUP_SQL : MESSY_CSV, b);
-});
-
-render();
-</script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+<script src="content.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

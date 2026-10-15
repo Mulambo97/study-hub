@@ -26,6 +26,7 @@ function save() {
   S.days[today()] = true;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast("Couldn't save: browser storage is blocked"); } }, 250);
+  if ((typeof Sync !== "undefined")) Sync.schedule();
 }
 window.addEventListener("pagehide", () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} });
 
@@ -295,6 +296,7 @@ function render() {
   $("#view").innerHTML = views[route.tab]();
   if (route.tab === "review") bindReview();
   if (route.tab === "lesson") updateLessonFooter();
+  if (route.tab === "progress") renderAccount();
   updateBadges();
 }
 function updateBadges() {
@@ -610,7 +612,8 @@ function skillLevel(ids, topic) {
 const LEVELS = [["Not started", ""], ["Learning", "mark"], ["Can explain", ""], ["Interview-ready", "good"]];
 function viewProgress() {
   const studied = Object.keys(S.days).length;
-  return `<section class="sheet"><h2>Progress</h2>
+  return `<section class="sheet" id="account"></section>
+  <section class="sheet"><h2>Progress</h2>
     <div class="stats"><span><b>${doneCount()}</b>/${LESSONS.length} lessons</span><span><b>${Object.values(S.cards).filter(c => c.box >= 2).length}</b> cards remembered for a week or more</span><span><b>${openGaps().length}</b> open gaps</span><span><b>${studied}</b> day${studied === 1 ? "" : "s"} studied</span></div></section>
   <section class="sheet"><h2>Resume check</h2>
     <p>Which skills you can honestly claim today. <b>Can explain</b> = all lessons done. <b>Interview-ready</b> = all lessons done, most flashcards remembered for 7+ days, and no open gaps in that topic. Claim a skill on your resume only at <b>Can explain</b> or above.</p>
@@ -619,8 +622,8 @@ function viewProgress() {
     </tbody></table></div></section>
   <section class="sheet"><h2>Schedule</h2>
     <div class="row"><label for="start-date">I started on</label><input type="date" id="start-date" value="${esc(S.start)}"><span class="small muted">Week ${calendarWeek()} of 16. Change this if you take a break.</span></div></section>
-  <section class="sheet"><h2>Move your progress to another device</h2>
-    <p>Progress is saved in this browser only. To move it (phone ↔ laptop), copy the backup code here and paste it on the other device.</p>
+  <section class="sheet"><h2>Backup code</h2>
+    <p>A manual copy of your progress, in case you ever can't sign in. Copy it now and then and keep it somewhere safe.</p>
     <div class="row"><button class="btn" data-act="export">Copy backup code</button></div>
     <textarea id="backup" class="code" rows="3" placeholder="Paste a backup code here to restore…"></textarea>
     <div class="row"><button class="btn" data-act="import">Restore from code</button><span class="small muted">Restoring replaces the progress on this device.</span></div>
@@ -639,6 +642,35 @@ function viewPlay() {
   <section class="sheet"><h3>Python</h3>
     <textarea class="code" id="play-py" data-play="py" rows="6" spellcheck="false">${esc(v.code)}</textarea>
     <div class="row"><button class="btn primary" data-act="play-py">Run</button><span class="small muted">pandas works: import pandas as pd</span></div><div class="out" id="play-py-out">${v.outHTML}</div></section>`;
+}
+
+function renderAccount() {
+  const el = $("#account"); if (!el || !(typeof Sync !== "undefined")) return;
+  if (Sync.status === "unavailable" || !Sync.client) { el.innerHTML = `<h2>Sync</h2><p class="muted">Sync couldn't load. Check your internet connection and reload. Your progress is still saved on this device.</p>`; return; }
+  if (Sync.conflict) {
+    const c = Sync.conflict;
+    el.innerHTML = `<h2>Which progress do you want to keep?</h2>
+      <p>This device and your account have different progress.</p>
+      <div class="row"><button class="btn primary" data-act="keep-remote">Use my account's progress (${c.remoteDone} lesson${c.remoteDone === 1 ? "" : "s"})</button>
+      <button class="btn" data-act="keep-local">Use this device's progress (${c.localDone} lesson${c.localDone === 1 ? "" : "s"})</button></div>
+      <p class="small muted">The one you don't pick is replaced on all your devices.</p>`;
+    return;
+  }
+  if (Sync.user) {
+    el.innerHTML = `<h2>Sync is on</h2>
+      <p>Signed in as <b>${esc(Sync.user.email)}</b>. Your progress saves to your account and shows up on every device where you sign in.</p>
+      <p class="small muted">${Sync.status === "syncing" ? "Syncing…" : Sync.status === "error" ? "Last sync failed (" + esc(Sync.detail || "network") + "). Your progress is safe on this device and will sync next time." : Sync.lastSynced ? "Last synced at " + Sync.lastSynced.toLocaleTimeString() + "." : "Up to date."}</p>
+      <div class="row"><button class="btn" data-act="sync-now">Sync now</button><button class="btn ghost" data-act="sign-out">Sign out</button></div>`;
+    return;
+  }
+  el.innerHTML = `<h2>Sync your phone and laptop</h2>
+    <p>Sign in with the same email and password on each device and your progress follows you. First time? Pick a password and tap <b>Create account</b>.</p>
+    <form id="auth-form" class="authform" autocomplete="on">
+      <label for="auth-email">Email</label><input type="email" id="auth-email" name="email" autocomplete="username" required>
+      <label for="auth-pass">Password (6+ characters)</label><input type="password" id="auth-pass" name="password" autocomplete="current-password" minlength="6" required>
+      <div class="row"><button class="btn primary" type="submit" data-mode="in">Sign in</button><button class="btn" type="submit" data-mode="up">Create account</button></div>
+      <p class="small badtxt" id="auth-msg" role="alert"></p>
+    </form>`;
 }
 
 /* ---------------- Events ---------------- */
@@ -696,6 +728,10 @@ document.addEventListener("click", async e => {
     $("#import-confirm").innerHTML = `<div class="callout">This backup has ${n} finished lesson${n === 1 ? "" : "s"}. Replace this device's progress with it? <button class="btn primary" data-act="import-yes">Replace</button> <button class="btn ghost" data-act="import-no">Cancel</button></div>`;
     window.__pendingImport = data;
   }
+  else if (act === "keep-remote") Sync.resolve("remote");
+  else if (act === "keep-local") Sync.resolve("local");
+  else if (act === "sync-now") Sync.pull(false);
+  else if (act === "sign-out") { await Sync.signOut(); toast("Signed out. Progress stays on this device."); }
   else if (act === "import-yes" && window.__pendingImport) { S = Object.assign(blank(), window.__pendingImport); window.__pendingImport = null; save(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (err) {} toast("Progress restored"); rq = null; practiceSet = null; render(); }
   else if (act === "import-no") { window.__pendingImport = null; $("#import-confirm").innerHTML = ""; }
   else if (act === "play-sql") {
@@ -751,5 +787,18 @@ document.addEventListener("keydown", e => {
   }
 });
 
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "auth-form") return;
+  e.preventDefault();
+  const mode = e.submitter && e.submitter.dataset.mode === "up" ? "up" : "in";
+  const email = $("#auth-email").value.trim(), pass = $("#auth-pass").value;
+  const msg = $("#auth-msg"); msg.textContent = mode === "up" ? "Creating your account…" : "Signing in…";
+  e.target.querySelectorAll("button").forEach(b => b.disabled = true);
+  const err = mode === "up" ? await Sync.signUp(email, pass) : await Sync.signIn(email, pass);
+  if (err) { msg.textContent = err; e.target.querySelectorAll("button").forEach(b => b.disabled = false); }
+  else { toast(mode === "up" ? "Account created. Sync is on." : "Signed in. Sync is on."); renderAccount(); }
+});
+
 route = parseHash();
 render();
+if ((typeof Sync !== "undefined")) Sync.init();

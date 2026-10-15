@@ -179,6 +179,14 @@ table.result th { background: var(--code-bg); font-weight: 500; }
 .skilltbl th, .skilltbl td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .skilltbl th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
 .res { list-style: none; padding: 0; }
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 16px; }
+.sync { font: 500 12px var(--mono); border: 1px solid var(--rule); background: var(--sheet); color: var(--muted); border-radius: 99px; padding: 4px 10px; cursor: pointer; }
+.sync[data-state="synced"] { color: var(--good); border-color: var(--good); }
+.sync[data-state="error"], .sync[data-state="conflict"] { color: var(--bad); border-color: var(--bad); }
+.sync[data-state="signed-out"] { color: var(--accent); border-color: var(--accent); }
+.authform { display: grid; gap: 6px; max-width: 420px; }
+.authform label { font-size: 14px; font-weight: 500; margin-top: 6px; }
+input[type="email"], input[type="password"] { width: 100%; font: 15px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 7px; padding: 10px 12px; }
 .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--sheet); padding: 9px 16px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 10; max-width: calc(100% - 32px); text-align: center; }
 .toast.show { opacity: 1; }
 @media (max-width: 560px) {
@@ -196,6 +204,7 @@ table.result th { background: var(--code-bg); font-weight: 500; }
 <div class="wrap">
   <header class="top">
     <h1 class="brand"><span class="q">SELECT you FROM learners WHERE level = 'zero';</span>Data Engineering: Zero to Pro</h1>
+    <button class="sync" id="sync-status" data-go="progress" hidden></button>
   </header>
   <nav class="tabs" id="tabs" aria-label="Sections">
     <button data-tab="today" aria-selected="true">Today</button>
@@ -210,7 +219,9 @@ table.result th { background: var(--code-bg); font-weight: 500; }
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="content.js"></script>
+<script src="sync.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
